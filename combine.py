@@ -388,39 +388,6 @@ class GameMenu:
             
             sleep(100)
 
-def main():
-    """
-    Main function that displays a menu and launches selected game.
-    Button A for Dino Game, Button B for Tag Game.
-    Touch sensor always returns to menu.
-    """
-    while True:
-        # Display menu
-        display.scroll("MENU")
-        display.show("?")
-        
-        # Wait for button press
-        while True:
-            # Button A for Dino Game
-            if button_a.was_pressed():
-                display.clear()
-                display.show("D")
-                sleep(500)
-                game = DinoGame()
-                game.run()
-                break  # Return to main menu after game
-            
-            # Button B for Tag Game
-            if button_b.was_pressed():
-                display.clear()
-                display.show("T")
-                sleep(500)
-                game = TagGame()
-                game.run()
-                break  # Return to main menu after game
-            
-            sleep(100)
-
 class Battleship:
     def __init__(self):
         # --- Globals ---
@@ -641,6 +608,39 @@ class Battleship:
         self.startup()
 
 
-# Start the application
+
+def main():
+    """
+    Main function that displays a menu and launches selected game.
+    Button A for Dino Game, Button B for Tag Game.
+    Touch sensor always returns to menu.
+    """
+    while True:
+        # Display menu
+        display.scroll("MENU")
+        display.show("?")
+        
+        # Wait for button press
+        while True:
+            # Button A for Dino Game
+            if button_a.was_pressed():
+                display.clear()
+                display.show("D")
+                sleep(500)
+                game = DinoGame()
+                game.run()
+                break  # Return to main menu after game
+            
+            # Button B for Tag Game
+            if button_b.was_pressed():
+                display.clear()
+                display.show("T")
+                sleep(500)
+                game = TagGame()
+                game.run()
+                break  # Return to main menu after game
+            
+            sleep(100)
+            
 if __name__ == "__main__":
     main()
