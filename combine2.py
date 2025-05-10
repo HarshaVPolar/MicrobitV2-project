@@ -2,7 +2,6 @@ import random
 from microbit import *
 import music
 import radio
-import time
 
 class DinoGame:
     def __init__(self):
@@ -571,28 +570,35 @@ class Battleship:
         self.startup()
 
 def main():
-    while True:
-        display.scroll("MENU")
-        display.show("?")
+    display.scroll("MENU")
+    display.show("?")
         
-        while True:
-            if button_a.was_pressed():
-                display.clear()
-                display.show("D")
-                sleep(500)
-                game = DinoGame()
-                game.run()
-                break
-            
-            if button_b.was_pressed():
-                display.clear()
-                display.show("B")
-                sleep(500)
-                game = Battleship()
-                game.run()
-                break
-            
-            sleep(100)
-            
+    while True:
+        if button_a.was_pressed():
+            display.clear()
+            display.show("D")
+            sleep(500)
+            game = DinoGame()
+            game.run()
+            break
+        
+        if button_b.was_pressed():
+            display.clear()
+            display.show("B")
+            sleep(500)
+            game = Battleship()
+            game.run()
+            break
+
+        if pin_logo.is_touched():
+            display.clear()
+            display.show("T")
+            sleep(500)
+            game = TagGame()
+            game.run()
+            break
+        sleep(100)
+    main()
+
 if __name__ == "__main__":
     main()
