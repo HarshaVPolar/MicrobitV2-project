@@ -49,7 +49,6 @@ button_pressed_mode:
 
 .size main, .-main
 
-// --- Setup GPIO ---
 setup_gpio:
     push {lr}
 
