@@ -2,7 +2,6 @@
 .global main
 .type main, %function
 
-// --- Constants ---
 .equ GPIO_PORT0_BASE,      0x50000000
 .equ GPIO_PORT1_BASE,      0x50000300
 .equ P0_OUT_OFFSET,        0x504
@@ -13,14 +12,12 @@
 .equ P0_DIRSET_OFFSET,     0x518
 .equ P0_PINCNF_OFFSET,     0x700
 
-// Micro:bit Pins for Columns
 .equ COL1_PIN, 28  // P0.28
 .equ COL2_PIN, 11  // P0.11
 .equ COL3_PIN, 31  // P0.31
 .equ COL4_PIN, 5   // Port 1, pin 5
 .equ COL5_PIN, 30  // P0.30
 
-// Micro:bit Pins for Rows
 .equ ROW1_PIN, 21  // P0.21
 .equ ROW2_PIN, 22  // P0.22
 .equ ROW3_PIN, 15  // P0.15
@@ -33,25 +30,20 @@ main:
     bl setup_gpio
 
 main_loop:
-    // Check if button A is pressed
     bl is_button_a_pressed
     cmp r0, #1
     beq button_pressed_mode
     
-    // If not pressed, run sequence_1_b animation (triangle pattern)
     bl sequence_1_b
     b main_loop
 
 button_pressed_mode:
-    // Run sequence_2 animation when button is pressed
     bl sequence_2
     
-    // Check if button is still pressed after sequence
     bl is_button_a_pressed
     cmp r0, #1
-    beq button_pressed_mode  // Stay in this mode while button is pressed
+    beq button_pressed_mode
     
-    // Button released, return to main loop
     bl clear_bit
     b main_loop
 
@@ -60,8 +52,7 @@ button_pressed_mode:
 // --- Setup GPIO ---
 setup_gpio:
     push {lr}
-    
-    // Configure all rows as outputs
+
     ldr r4, =GPIO_PORT0_BASE
     
     // Row 1
@@ -89,8 +80,6 @@ setup_gpio:
     lsl r0, r0, #ROW5_PIN
     str r0, [r4, #P0_DIRSET_OFFSET]
     
-    // Configure all columns as outputs
-    
     // Col 1
     mov r0, #1
     lsl r0, r0, #COL1_PIN
@@ -111,7 +100,6 @@ setup_gpio:
     lsl r0, r0, #COL5_PIN
     str r0, [r4, #P0_DIRSET_OFFSET]
     
-    // Configure COL4 which is on PORT1
     ldr r4, =GPIO_PORT1_BASE
     mov r0, #1
     lsl r0, r0, #COL4_PIN
@@ -128,7 +116,6 @@ setup_gpio:
     bl clear_bit
     pop {pc}
 
-// ---- Button A pressed check ---
 is_button_a_pressed:
     push {r1-r2}
     ldr r1, =GPIO_PORT0_BASE
@@ -138,17 +125,13 @@ is_button_a_pressed:
     tst r1, r2
     mov r0, #0
     it eq
-    moveq r0, #1  // Return 1 if button is pressed (LOW due to pull-up)
+    moveq r0, #1
     pop {r1-r2}
     bx lr
 
-// ---- ANIMATION SEQUENCES ----
-
-// Sequence 1_b - Triangle pattern animation
 sequence_1_b: // Full Board Slow Animation 2 triangle pattern 
     push {lr}
 
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_1
@@ -161,7 +144,6 @@ continue_seq1_1:
     bl timer
     bl clear_bit
     
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_2
@@ -173,7 +155,6 @@ continue_seq1_2:
     bl timer
     bl clear_bit
     
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_3
@@ -185,7 +166,6 @@ continue_seq1_3:
     bl timer
     bl clear_bit
     
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_4
@@ -197,7 +177,6 @@ continue_seq1_4:
     bl timer
     bl clear_bit
     
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_5
@@ -209,7 +188,6 @@ continue_seq1_5:
     bl timer
     bl clear_bit
 
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_6
@@ -222,7 +200,6 @@ continue_seq1_6:
     bl timer
     bl clear_bit
     
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_7
@@ -233,8 +210,7 @@ continue_seq1_7:
     bl shape_1_col_2
     bl timer
     bl clear_bit
-    
-    // Check button before continuing
+   
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_8
@@ -246,7 +222,6 @@ continue_seq1_8:
     bl timer
     bl clear_bit
     
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_9
@@ -258,7 +233,6 @@ continue_seq1_9:
     bl timer
     bl clear_bit
     
-    // Check button before continuing
     bl is_button_a_pressed
     cmp r0, #1
     bne continue_seq1_10
@@ -273,90 +247,81 @@ continue_seq1_10:
     pop {lr}
     bx lr
 
-// Sequence 2 - Closing animation
 sequence_2:
     push {lr}
 
-    // Check button before continuing
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0    
     beq button_released_during_seq2
     bl timer
     bl shape_2_col_1
     
-    // Check button before continuing
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0    
     beq button_released_during_seq2
     bl timer
     bl shape_2_col_2
     
-    // Check button before continuing
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0   
     beq button_released_during_seq2
     bl timer
     bl shape_2_col_3
     
-    // Check button before continuing
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0   
     beq button_released_during_seq2
     bl timer
     bl shape_2_col_4
     
-    // Check button before continuing
+    
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0    
     beq button_released_during_seq2
     bl timer
     bl shape_2_col_5
     
-    // Check button before continuing
+    
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0   
     beq button_released_during_seq2
     bl timer
     bl clear_bit
 
-    // Check button before continuing
+    
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0  
     beq button_released_during_seq2
     bl timer 
     bl shape_3_col_5
     
-    // Check button before continuing
+    
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0    
     beq button_released_during_seq2
     bl timer
     bl shape_3_col_4
     
-    // Check button before continuing
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0   
     beq button_released_during_seq2
     bl timer
     bl shape_3_col_3
     
-    // Check button before continuing
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0  
     beq button_released_during_seq2
     bl timer
     bl shape_3_col_2
     
-    // Check button before continuing
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0    
     beq button_released_during_seq2
     bl timer
     bl shape_3_col_1
     
-    // Check button before continuing
     bl is_button_a_pressed
-    cmp r0, #0    // Check if button released
+    cmp r0, #0 
     beq button_released_during_seq2
     bl timer
     bl clear_bit
@@ -369,10 +334,8 @@ button_released_during_seq2:
     pop {lr}
     bx lr
 
-// Timer function for animation speed
-timer:
     push {lr}
-    ldr r9, =400000   // Adjust for animation speed
+    ldr r9, =400000 
     bl delay_loop
     pop {lr}
     bx lr
@@ -383,8 +346,6 @@ delay_loop:
     cmp r9, #0
     bne delay_loop
     bx lr
-
-// ---- SHAPE FUNCTIONS ----
 
 // Shape 1 Column 1 (Col1 / Row 1,2,3,4,5)
 shape_1_col_1:
@@ -732,7 +693,6 @@ shape_3_col_5:
     pop {lr}
     bx lr
 
-// Set bit function
 set_bit:
     // r4: base address of pin
     // r0: offset of address
@@ -746,7 +706,6 @@ set_bit:
     pop {lr}
     bx lr
 
-// Clear bit function
 clear_bit:
     // Clears entire board by pushing 0 into registers
     push {lr}
